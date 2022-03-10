@@ -1,8 +1,8 @@
 /**
  * Demo program for mat exercise.
  * 
- * Author: barak sharabi
- * Since : 2022-03
+ * Author: Tal Zichlinsky
+ * Since : 2022-01
  */
 
 #include "mat.hpp"
@@ -13,9 +13,6 @@ using namespace std;
 
 int main() {
 	cout << ariel::mat(9, 7, '@', '-') << endl;
-
-
-
 /* Should print:
 @@@@@@@@@
 @-------@
