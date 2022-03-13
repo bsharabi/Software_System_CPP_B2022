@@ -30,8 +30,7 @@ void create_rug(int a, int b, int c, int d, char symbol1, vector<vector<char>> &
 
 string ariel::mat(int width, int hight, char symbol1, char symbol2)
 {
-   
-    if (symbol1 < 33 || symbol1 > 126 || symbol2 < 33 || symbol2 > 126)
+    if (symbol1 < '!' || symbol1 > '~' || symbol2 < '!' || symbol2 > '~' )
     {
         throw invalid_argument("bad letters");
     }
