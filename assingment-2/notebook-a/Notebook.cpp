@@ -24,7 +24,7 @@ void Notebook::write(int page, int row_number, int column, ariel::Direction dire
         line = notebook[page_number][row];
         for (uint i = (uint)col, cnt = 0; i < len + (uint)col; i++, cnt++)
         {
-            if (line[i] != '_')
+            if (line[i] != '_' || str[cnt]=='~' || str[cnt] == '_')
             {
                 throw invalid_argument("Can not write in this column");
             }
