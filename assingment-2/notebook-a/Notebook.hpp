@@ -209,9 +209,9 @@ namespace ariel
             return Notebook::notebook[page_number].empty();
         }
         /**
-         * Checking the existence of a page.
+         * Creates new lines.
          *
-         * Function responsible for Checking the existence of a page.
+         * Function responsible for Creates new lines.
          *
          * @param page_number The page number we would like to create a new line.
          * @param row_number The row number we would like to create a new line.
