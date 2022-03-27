@@ -10,7 +10,7 @@ void Notebook::write(int page, int row_number, int column, ariel::Direction dire
 {
     if (!Notebook::validation(page, row_number, column, direction, 0, str))
     {
-        return;
+        throw invalid_argument("did not pass validation");
     }
     uint row = (uint)row_number;
     uint col = (uint)column;
@@ -22,31 +22,36 @@ void Notebook::write(int page, int row_number, int column, ariel::Direction dire
     {
         Notebook::createMultiLine(page_number, row);
         line = notebook[page_number][row];
-        for (uint i = (uint)col, cnt = 0; i < len + (uint)col; i++, cnt++)
+        for (uint i = col, cnt = 0; i < len + col; i++, cnt++)
         {
-            if (line[i] != '_' || str[cnt]=='~' || str[cnt] == '_')
+            if (line[i] != '_' || str[cnt] == '\n' || str[cnt] < ' ' || str[cnt] >= '~')
             {
-                throw invalid_argument("Can not write in this column");
+
+                throw invalid_argument("Can not write in this column Hor");
             }
 
             line[i] = str[cnt];
         }
         notebook[page_number][row] = line;
     }
+
     else
     {
         Notebook::createMultiLine(page_number, row, len + 1);
+        bool flag = true;
 
-        for (uint i = (uint)row; direction == Direction::Vertical && i < (uint)row + len; i++)
+        for (uint i = row, cnt = 0; i < row + len; i++, cnt++)
         {
-            line = Notebook::notebook[page_number][(uint)i];
-            if (line[col] != '_')
+            line = Notebook::notebook[page_number][i];
+            if (line[col] != '_' || str[cnt] == '\n' || str[cnt] < ' ' || str[cnt] >= '~')
             {
+
+                throw invalid_argument("Can not write in this column ver");
+                flag = false;
                 return;
             }
-            // throw invalid_argument("Can not write in this column ver");
         }
-        for (uint i = (uint)row, cnt = 0; direction == Direction::Vertical && i < row + len; i++, cnt++)
+        for (uint i = row, cnt = 0; flag && i < row + len; i++, cnt++)
         {
             Notebook::notebook[page_number][i][col] = str[cnt];
         }
@@ -84,7 +89,7 @@ string Notebook::read(int page, int row_number, int column, ariel::Direction dir
 
 void Notebook::erase(int page, int row_number, int column, ariel::Direction direction, int len)
 {
-    if (!Notebook::validation(page, row_number, column, direction, 0, "ok", len))
+    if (!Notebook::validation(page, row_number, column, direction, 2, "ok", len))
     {
         return;
     }
@@ -110,12 +115,15 @@ void Notebook::erase(int page, int row_number, int column, ariel::Direction dire
 
 void Notebook::show(int page_n)
 {
-    uint page_number = (uint)page_n;
-    if (Notebook::pageExist(page_number))
+    if (page_n < 0)
     {
-        cout << "Page " + to_string(page_number) + " Does not exist" << endl;
-        return;
+        throw invalid_argument("Incorrect parameters");
     }
+
+    uint page_number = (uint)page_n;
+
+    if (Notebook::pageExist(page_number))
+                Notebook::setPage(page_number);
 
     map<uint, string> page = Notebook::getPage(page_number);
 

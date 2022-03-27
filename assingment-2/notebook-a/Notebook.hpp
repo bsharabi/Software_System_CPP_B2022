@@ -1,11 +1,9 @@
 #pragma once
 #include "Direction.hpp"
+
 #include <iostream>
 #include <map>
-#include <vector>
-
 #include <string>
-// typedef unsigned int int;
 using namespace std;
 
 namespace ariel
@@ -89,42 +87,46 @@ namespace ariel
          */
         bool validation(int page, int row_number, int col, ariel::Direction dir, int mode, string const &str = "OK", int len = 1)
         {
-
             /*
             Checking the parameters before use
             The row number, column, and page number should be positive values
             */
-            if (row_number < 0 || col < 0 || col > 100 || page < 0 || len < 0)
+            if (row_number < 0 || col < 0 || col >= 100 || page < 0 || len < 0)
                 throw invalid_argument("Incorrect parameters, can not write in negative locations");
 
             uint page_number = (uint)page;
             uint row = (uint)row_number;
             uint column = (uint)col;
             uint length = (uint)len;
+            // Output deviation from the received column (not more than 100 columns)
+            if (column >= 100)
+                throw invalid_argument("column is invalid");
 
             // validity read
             if (mode)
             {
                 // Check reading input length, not more than 100 columns per line or negative output length
-                if ((length > 100 && dir == Direction::Horizontal) || length < 0)
-                    throw invalid_argument("String length is invalid");
-
-                // Output deviation from the received column (not more than 100 columns)
-                if ((length + column > 100 && dir == Direction::Horizontal))
+                if (((length > 100 || length + column > 100) && dir == Direction::Horizontal) || length < 0)
                     throw invalid_argument("String length is invalid");
             }
             // validity write
-            else
+            else if (mode == 1)
             {
                 uint length_str = str.length();
+
                 // String length integrity check
                 if (length_str == 0)
                     throw invalid_argument("An empty string");
+
                 // Input deviation from the received column (no more than 100 columns)
-                if (length_str + (uint)column > 100 && dir == Direction::Horizontal)
+                if ((length_str + column >= 100 || length_str >= 100) && dir == Direction::Horizontal)
                     throw invalid_argument("String length is invalid");
+            }
+            // validity erase
+            else
+            {
                 // Check the input length for deletion
-                if (length > 100)
+                if ((length >= 100 || length + column >= 100) && dir == Direction::Horizontal)
                     throw invalid_argument("String length is invalid");
             }
             // Once all the tests are correct we will want to check if the requested page exists and create if necessary

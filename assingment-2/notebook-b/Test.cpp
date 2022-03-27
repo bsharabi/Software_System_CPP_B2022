@@ -1,7 +1,7 @@
 #include <string>
 #include "doctest.h"
 #include "Notebook.hpp"
-#include "./sources/Direction.hpp"
+#include "Direction.hpp"
 using namespace ariel;
 using namespace std;
 
