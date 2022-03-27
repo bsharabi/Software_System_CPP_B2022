@@ -132,7 +132,7 @@ void Notebook::erase(int page, int row_number, int column, ariel::Direction dire
 
 void Notebook::show(int page_n)
 {
-    //Check the page number that is not negative
+    // Check the page number that is not negative
     if (page_n < 0)
     {
         throw invalid_argument("Incorrect parameters");
@@ -140,12 +140,14 @@ void Notebook::show(int page_n)
 
     uint page_number = (uint)page_n;
 
-    //Create a page that has not yet been written and that we would like to show
+    // Create a page that has not yet been written and that we would like to show
     if (Notebook::pageExist(page_number))
+    {
         Notebook::setPage(page_number);
+    }
 
     map<uint, string> page = Notebook::getPage(page_number);
-    //Print the page conveniently
+    // Print the page conveniently
     cout << "                                        -Page number(" << to_string(page_number) << ")-" << endl;
     for (auto const &kv : page)
     {
