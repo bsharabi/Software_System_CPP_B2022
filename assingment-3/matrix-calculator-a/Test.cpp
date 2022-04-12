@@ -10,9 +10,9 @@ TEST_CASE("Good inputs")
 {
     SUBCASE("Operator check not throw")
     {
-        vector<double> a = {2, 2, 2, 1, 1, 1, 3, 3, 3};
+        vector<double> a = {3, 3, 3, 2, 2, 2, 1, 1, 1};
         Matrix mat1(a, 3, 3);
-        vector<double> b = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+        vector<double> b = {2, 2, 2, 2, 2, 2, 2, 2, 2};
         Matrix mat2(b, 3, 3);
         bool ans;
         CHECK_NOTHROW(mat1 + mat2);
