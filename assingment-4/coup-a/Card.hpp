@@ -24,6 +24,7 @@ namespace coup
         block,
         transfer,
         coup,
+        start,
         err,
     };
 }

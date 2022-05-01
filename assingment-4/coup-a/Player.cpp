@@ -9,13 +9,12 @@ namespace coup
     Player::Player(const string &name, int money, CardType role, Game &g)
     {
         _game = &g;
-        last_action = ActionType::err;
+        last_action = ActionType::start;
         alive = true;
         _role = role;
         this->name = name;
         _money = money;
         turn_number = (*(_game)).get_numberOfPlayer();
-        (*(_game)).incPlayerNumber();
         switch (_role)
         {
         case CardType::Duke:
@@ -34,6 +33,21 @@ namespace coup
             this->_card_name = "Contessa";
             break;
         }
+        string line;
+        ifstream myfile("logo_card/" + _card_name);
+        if (myfile.is_open())
+        {
+            while (getline(myfile, line))
+            {
+                actor_draw += "\033[0;34m" + line + "\n";
+            }
+            myfile.close();
+        }
+        else
+        {
+            cout << "Unable to open file";
+        }
+        printf("\033[0m");
         (*(_game)).addPlayer(this);
     };
     void Player::income()
@@ -108,7 +122,7 @@ namespace coup
     {
         return alive;
     }
-    ActionType Player::lastAction()
+    ActionType Player::getLastAction()
     {
         return last_action;
     }
@@ -116,12 +130,10 @@ namespace coup
     {
         return _game;
     }
-
     unsigned int Player::turn_Number() const
     {
         return turn_number;
     }
-
     void Player::block(Player &p)
     {
         throw invalid_argument("This player can not perform this action");
@@ -142,16 +154,6 @@ namespace coup
     {
         this->name = name;
     }
-    ostream &
-    operator<<(std::ostream &out, const Player &p1)
-    {
-        out << "\033[1;31mName: \033[1;33m" << p1.name + " \033[0;34m" + p1._card_name + "\033[0m";
-        return out;
-    }
-    string Player::description()
-    {
-        return "\033[1;31mName: \033[1;33m" + *this->getName() + " \033[0;34m" + this->_card_name + "\033[0m";
-    }
     bool Player::operator==(const Player &p) const
     {
         return this == &p;
@@ -171,6 +173,57 @@ namespace coup
     Player *Player::getAttacked()
     {
         throw invalid_argument("This player can not perform this action");
+    }
+    ostream &
+    operator<<(std::ostream &out, const Player &p1)
+    {
+
+        out << "\033[1;31mName: \033[1;33m" << p1.name + " \033[0;34m" + p1._card_name + "\033[0m";
+        return out;
+    }
+    string Player::description()
+    {
+
+        string action;
+        switch (last_action)
+        {
+        case ActionType::income:
+            action = "income";
+            break;
+        case ActionType::foreign_aid:
+            action = "foreign_aid";
+            break;
+        case ActionType::tax:
+            action = "tax";
+            break;
+        case ActionType::steal:
+            action = "steal";
+            break;
+        case ActionType::block:
+            action = "block";
+            break;
+        case ActionType::transfer:
+            action = "transfer";
+            break;
+        case ActionType::err:
+            action = "err";
+            break;
+        case ActionType::coup:
+            action = "coup";
+            break;
+        case ActionType::start:
+            action = "start";
+            break;
+        }
+        string doc;
+        doc += actor_draw;
+        doc += "\033[1;31m| Name: \033[1;33m" + *getName() + "\n";
+        doc += "\033[1;31m| Role: \033[1;33m" + _card_name + "\n";
+        doc += "\033[1;31m| Coins: \033[1;33m" + to_string(_money) + "\n";
+        doc += "\033[1;31m| Alive: \033[1;33m" + to_string(alive) + "\n";
+        doc += "\033[1;31m| Last-Action: \033[1;33m" + action + "\n";
+        doc += "\033[1;31m| Turn-Number: \033[1;33m" + to_string(turn_number) + "\n\033[0m";
+        return doc;
     }
 
 }

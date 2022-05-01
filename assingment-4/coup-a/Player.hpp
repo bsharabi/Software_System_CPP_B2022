@@ -3,6 +3,8 @@
 #define PLAYER_H
 #include <iostream>
 #include <vector>
+#include <fstream>
+
 #include <string>
 #include "Card.hpp"
 #include "Game.hpp"
@@ -17,6 +19,7 @@ namespace coup
     protected:
         string name;
         string _card_name;
+        string actor_draw;
         CardType _role;
         Game *_game;
         ActionType last_action;
@@ -25,6 +28,7 @@ namespace coup
         bool alive;
 
     public:
+        //-------------------------------------- Constructor -----------------------------------
         /**
          * Constructor.
          * @param name The name of the actor
@@ -33,59 +37,105 @@ namespace coup
          * @return None.
          */
         Player(const string &, int, CardType, Game &);
+        // ------------------------------------- Function --------------------------------------
         /**
-         *@brief  Take a coin.
-         *This action has no cost, no counter-actions and the player earns a single coin..
+         * @brief  Take a coin.
+         * This action has no cost, no counter-actions and the player earns a single coin..
          * @return None.
          */
         void income();
         /**
-         *@brief  Double pay - foreign_aid - take two coins from the pile.
-         *This action has no cost and it entitles the player to two coins.
-         *But, there is a role in the game that can block this action.
-         *  If the player is blocked while trying to take a double pay, his turn ends.
+         * @brief  Double pay - foreign_aid - take two coins from the pile.
+         * This action has no cost and it entitles the player to two coins.
+         * But, there is a role in the game that can block this action.
+         * If the player is blocked while trying to take a double pay, his turn ends.
          * @return None.
          */
         void foreign_aid();
         /**
-         *@brief  Coup - to oust an opposing player
-         *from his position and thus remove him from the game.
-         *The cost of this action is 7 coins,
-         *it has no counter-actions and it ends with the player on whom the
-         *action was activated being fired and ending the game
-         *
-         * @param player Object player
-         * @return None.
-         */
-        virtual void coup(Player &);
-        /**
          *@brief  The role of the actor
          * A function that returns the role of the player
          *
-         * @return None.
+         * @return returns the role of the player.
          */
         string role();
         /**
          *@brief  The coins of the actor
          * A function that returns The amount of coins of the player
          *
-         * @return None.
+         * @return returns The amount of coins of the player.
          */
-        int coins()const;
+        int coins() const;
+        // ----------------------------------- Help function -----------------------------------
         /**
-         *@brief  The coins of the actor
-         * A function that returns The amount of coins of the player
+         *@brief  The method returns whether it is the player's turn
          *
-         * @param player Object player
+         * @return True if not otherwise..
+         */
+        bool is_turn();
+        /**
+         *@brief  TThe method returns whether the player is still in the game
+         *
+         * @return True if not otherwise.
+         */
+        bool is_alive() const;
+        /**
+         * @brief The method returns the player's turn number
+         *
+         * @return turn number.
+         */
+        unsigned int turn_Number() const;
+        /**
+         * Description method.
+         *
+         * @return Player description.
+         */
+        string description();
+        // -------------------------------------- Overloading function --------------------------
+        /**
+         * operator * overloading.
+         *
+         * @param out
+         * @param player The object expressing the player
+         * @return st.
+         */
+        friend std::ostream &operator<<(std::ostream &out, const Player &p1);
+        /**
+         * operator == overloading.
+         *
+         * @param player The object expressing the player
+         * @return True if not otherwise.
+         */
+        bool operator==(const Player &p) const;
+        // ---------------------------------------- Getter && Setter ----------------------------
+        /**
+         *@brief  Function responsible for returning the last action performed by the player
+         *
+         * @return last action performed by the player.
+         */
+        ActionType getLastAction();
+        /**
+         *@brief setter coins
+         *
+         * @param m Number of coins to add
          * @return None.
          */
-        virtual void block(Player &);
-        virtual void steal(Player &);
-        virtual void tax();
-        virtual void transfer(Player &, Player &);
-        ActionType lastAction();
+        void setMoney(int m);
         /**
-         *@brief  The method returns
+         *@brief  setter alive
+         *
+         * @return None.
+         */
+        void setAlive(bool);
+        /**
+         *@brief  name's setter
+         *
+         * @param name The new name of the actor
+         * @return None.
+         */
+        void setName(const string &);
+        /**
+         *@brief  name getter
          *
          * @return name's ref.
          */
@@ -102,59 +152,58 @@ namespace coup
          * @return object of the game.
          */
         Game *getGame();
+        // ----------------------------------- Virtual Function -------------------------------
         /**
-         *@brief  name's setter
+         *@brief  A function that returns the player from whom coins were stolen in the last round
          *
-         * @param name The new name of the actor
+         * @return Player obj.
+         */
+        virtual Player *getStolen();
+        /**
+         *@brief  Virtual function, if the player does not have such a method then an error is thrown
+         *
+         * @param player Object player
          * @return None.
          */
-        void setName(const string &);
+        virtual void block(Player &);
         /**
-         *@brief  The method returns whether it is the player's turn
+         *@brief  Virtual function, if the player does not have such a method then an error is thrown
          *
-         * @return True if not otherwise..
+         * @param player Object player
+         * @return None.
          */
-        bool is_turn();
+        virtual void steal(Player &);
         /**
-         *@brief  TThe method returns whether the player is still in the game
+         *@brief  TVirtual function, if the player does not have such a method then an error is thrown
          *
-         * @return True if not otherwise.
+         * @return None.
          */
-        bool is_alive() const;
+        virtual void tax();
         /**
-         * @brief The method returns the player's turn number
-         *
-         * @param player The object expressing the player
-         * @return turn number.
+         *@brief  Virtual function, if the player does not have such a method then an error is thrown
+         * @param player from p
+         * @param player to p
+         * @return None.
          */
-        unsigned int turn_Number() const;
+        virtual void transfer(Player &, Player &);
         /**
-         * operator = overloading.
+         *@brief  Virtual function, if the player does not have such a method then an error is thrown
+      
          *
-         * @param player The object expressing the player
-         * @return Player description.
+         * @return player Object player.
          */
-        string description();
-        /**
-         * operator * overloading.
-         *
-         * @param out
-         * @param player The object expressing the player
-         * @return st.
-         */
-        friend std::ostream &operator<<(std::ostream &out, const Player &p1);
-        /**
-         * operator == overloading.
-         *
-         * @param player The object expressing the player
-         * @return True if not otherwise.
-         */
-        bool operator==(const Player &p) const;
-
-        void setMoney(int m);
-        virtual Player *getStolen();
-        void setAlive(bool);
         virtual Player *getAttacked();
+        /**
+         * @brief  Coup - to oust an opposing player
+         * from his position and thus remove him from the game.
+         * The cost of this action is 7 coins,
+         * it has no counter-actions and it ends with the player on whom the
+         * action was activated being fired and ending the game
+         *
+         * @param player Object player
+         * @return None.
+         */
+        virtual void coup(Player &);
     };
 
 }

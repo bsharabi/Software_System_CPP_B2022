@@ -19,7 +19,7 @@ void Duke::block(Player &p)
     {
         throw invalid_argument("The player was eliminated from the game");
     }
-    if (p.lastAction() == ActionType::foreign_aid)
+    if (p.getLastAction() == ActionType::foreign_aid)
     {
         p.setMoney(-2);
         last_action = ActionType::block;

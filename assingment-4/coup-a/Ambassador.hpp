@@ -26,10 +26,29 @@ namespace coup
          * @param name The name of player
          * @return None.
          */
-        Ambassador(Game &, const string&);
+        Ambassador(Game &, const string &);
+        /**
+         * block - A function responsible for preventing the theft of a Captain-type player.
+         *
+         * @param Player The name of player
+         * @return None.
+         */
         void block(Player &);
+        /**
+         * A function that allows the transfer of coins from one player to another..
+         *
+         * @param Player The name of player
+         * @param Player The name of player
+         * @return None.
+         */
         void transfer(Player &, Player &);
-        Player* getTransferPlayer(int );
+        /**
+         * A function that returns the player from whom coins were taken or a player who received the coins when activating a transfer function.
+         *
+         * @param mode 1,0
+         * @return Player.
+         */
+        Player *getTransferPlayer(int);
     };
 
 }

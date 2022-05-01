@@ -1,7 +1,4 @@
 #include "Game.hpp"
-#include <vector>
-#include <string>
-using namespace std;
 using namespace coup;
 
 Game::Game()
@@ -13,7 +10,7 @@ Game::Game()
 }
 string Game::turn()
 {
-    return (_numberOfPlayer >= 2) ? *_players[_turn]->getName() : "Empty";
+    return (_numberOfPlayer >= 2) ? *_players[_turn]->getName() : "The game is waiting for more players";
 }
 vector<string> Game::players()
 {
@@ -46,8 +43,13 @@ void Game::incPlayerNumber()
 }
 void Game::addPlayer(Player *p)
 {
-    // cout << "Hello Player " << *p << endl;
+    if (_numberOfPlayer > 6)
+    {
+        throw invalid_argument("The game is designed for 2-6 players");
+    }
+    cout << "Hello Player " << *p << endl;
     _players.push_back(p);
+    incPlayerNumber();
 }
 unsigned int Game::getTurn() const
 {
@@ -62,4 +64,3 @@ unsigned int Game::get_numberOfPlayer() const
 {
     return _numberOfPlayer;
 }
-

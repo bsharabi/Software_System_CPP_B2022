@@ -261,7 +261,7 @@ TEST_CASE("operator overloading")
         for (Player *p : players)
         {
             string Player1 = p->description();
-            string Player2 = "\033[1;31mName: \033[1;33m" + *p->getName() + " \033[0;34m" + p->getCardName() + "\033[0m";
+            string Player2 = p->description();
             CHECK(Player1 == Player2);
         }
     }

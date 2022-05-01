@@ -21,7 +21,7 @@ void Ambassador::block(Player &p)
     {
         throw invalid_argument("The player was eliminated from the game");
     }
-    if (p.lastAction() == ActionType::steal)
+    if (p.getLastAction() == ActionType::steal)
     {
         p.setMoney(-2);
         p.getStolen()->setMoney(2);

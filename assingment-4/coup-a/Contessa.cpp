@@ -20,7 +20,7 @@ void Contessa::block(Player &p)
     {
         throw invalid_argument("The player was eliminated from the game");
     }
-    if (p.lastAction() == ActionType::coup)
+    if (p.getLastAction() == ActionType::coup)
     {
         p.getAttacked()->setAlive(true);
         last_action = ActionType::block;
