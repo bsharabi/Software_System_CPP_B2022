@@ -42,12 +42,13 @@ namespace coup
                 actor_draw += "\033[0;34m" + line + "\n";
             }
             myfile.close();
+            actor_draw += "\033[0m";
         }
         else
         {
             cout << "Unable to open file";
         }
-        printf("\033[0m");
+        
         (*(_game)).addPlayer(this);
     };
     void Player::income()
@@ -216,11 +217,12 @@ namespace coup
             break;
         }
         string doc;
+        string tempAlive = alive?"true":"false";
         doc += actor_draw;
         doc += "\033[1;31m| Name: \033[1;33m" + *getName() + "\n";
         doc += "\033[1;31m| Role: \033[1;33m" + _card_name + "\n";
         doc += "\033[1;31m| Coins: \033[1;33m" + to_string(_money) + "\n";
-        doc += "\033[1;31m| Alive: \033[1;33m" + to_string(alive) + "\n";
+        doc += "\033[1;31m| Alive: \033[1;33m" + tempAlive + "\n";
         doc += "\033[1;31m| Last-Action: \033[1;33m" + action + "\n";
         doc += "\033[1;31m| Turn-Number: \033[1;33m" + to_string(turn_number) + "\n\033[0m";
         return doc;

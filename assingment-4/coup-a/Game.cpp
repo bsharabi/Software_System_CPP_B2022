@@ -1,4 +1,5 @@
 #include "Game.hpp"
+
 using namespace coup;
 
 Game::Game()
@@ -43,7 +44,7 @@ void Game::incPlayerNumber()
 }
 void Game::addPlayer(Player *p)
 {
-    if (_numberOfPlayer > 6)
+    if (_numberOfPlayer > MAX_PLAYERS)
     {
         throw invalid_argument("The game is designed for 2-6 players");
     }

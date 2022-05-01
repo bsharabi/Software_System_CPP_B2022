@@ -5,6 +5,7 @@
 #include <string>
 #include "Card.hpp"
 #include "Player.hpp"
+#define MAX_PLAYERS 6
 using coup::CardType;
 using namespace std;
 
