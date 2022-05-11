@@ -1,10 +1,13 @@
 
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "../doctest.h"
+// #include "../doctest.h"
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unistd.h>
+#include <stdio.h>
+#include <limits.h>
 #include "Card.hpp"
 #include "Game.hpp"
 #include <fstream>

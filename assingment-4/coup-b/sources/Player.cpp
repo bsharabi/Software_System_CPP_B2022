@@ -8,10 +8,12 @@ namespace coup
     {
         unsigned int numberOfPlayer = g.get_numberOfPlayer();
         if (g.isActive() || numberOfPlayer >= MAX_PLAYER)
-{            throw invalid_argument("Too many players or the game has started");
-}        _game = &g;
+        {
+            throw invalid_argument("Too many players or the game has started");
+        }
+        _game = &g;
         last_action = ActionType::start;
-        cost_coup=0;
+        cost_coup = 0;
         alive = true;
         _role = role;
         this->name = name;
@@ -36,7 +38,7 @@ namespace coup
             break;
         }
         string line;
-        ifstream myfile("logo_card/" + _card_name);
+        ifstream myfile("sources/logo_card/" + _card_name);
         if (myfile.is_open())
         {
             while (getline(myfile, line))
@@ -109,7 +111,7 @@ namespace coup
     {
         return _card_name;
     }
-    bool Player::is_turn(string  const &actionName)
+    bool Player::is_turn(string const &actionName)
     {
 
         (*(_game)).setActive();
@@ -124,12 +126,10 @@ namespace coup
         }
         if (turn_number != turn_now)
         {
-            cout << "print: Is not your turn " << *this << endl;
             throw invalid_argument("Is not your turn");
         }
         if (!is_alive())
         {
-            cout << "You're out of the game " << *this << endl;
             (*(_game)).incTurn();
             throw invalid_argument("You're out of the game");
         }
@@ -252,6 +252,7 @@ namespace coup
         doc += "\033[1;31m| Alive: \033[1;33m" + tempAlive + "\n";
         doc += "\033[1;31m| Last-Action: \033[1;33m" + action + "\n";
         doc += "\033[1;31m| Turn-Number: \033[1;33m" + to_string(turn_number) + "\n\033[0m";
+        cout << doc << endl;
         return doc;
     }
 }

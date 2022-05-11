@@ -14,7 +14,10 @@ SOURCES=$(wildcard $(SOURCE_PATH)/*.cpp)
 HEADERS=$(wildcard $(SOURCE_PATH)/*.hpp)
 OBJECTS=$(subst sources/,objects/,$(subst .cpp,.o,$(SOURCES)))
 
-run: test
+run: main test
+
+main:main.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o main
 
 test: TestRunner.o StudentTest1.o StudentTest2.o StudentTest3.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -44,5 +47,5 @@ valgrind: test
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./test 2>&1 | { egrep "lost| at " || true; }
 
 clean:
-	rm -f $(OBJECTS) *.o test* 
+	rm -f $(OBJECTS) *.o test* main
 	rm -f StudentTest*.cpp
