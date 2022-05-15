@@ -31,8 +31,11 @@ TEST_CASE("Initialization")
     SUBCASE("overriding root")
     {
         CHECK_NOTHROW(organization.add_root("CEO"));
+        CHECK(organization.getRoot()._name == "CEO");
         CHECK_NOTHROW(organization.add_root("CEO2")); // overriding root
+        CHECK(organization.getRoot()._name == "CEO2");
         CHECK_NOTHROW(organization.add_root("CEO3")); // overriding root
+        CHECK(organization.getRoot()._name == "CEO3");
     }
     SUBCASE("Add sub before root")
     {
@@ -95,5 +98,36 @@ TEST_CASE("Initialization")
         organization3.add_sub("COO", "VP_BI"); // Now the VP_BI is subordinate to the COO
         CHECK(organization3.getNumberEmployee() == 6);
         CHECK_THROWS(organization3.add_sub("CEO", "CTO"));
+    }
+    SUBCASE("Print")
+    {
+        OrgChart organization4;
+        organization4.add_root("CEO")
+            .add_sub("CEO", "CTO") // Now the CTO is subordinate to the CEO
+            .add_sub("CEO", "CFO") // Now the CFO is subordinate to the CEO
+            .add_sub("CEO", "COO") // Now the COO is subordinate to the CEO
+
+            .add_sub("CTO", "VP_SW")   // Now the VP Software is subordinate to the CTO
+            .add_sub("CTO", "VP_SW_1") // Now the VP Software is subordinate to the CTO
+            .add_sub("CTO", "VP_SW_2") // Now the VP Software is subordinate to the CTO
+
+            .add_sub("COO", "VP_BI")   // Now the VP_BI is subordinate to the COO
+            .add_sub("COO", "VP_BI_1") // Now the VP_BI is subordinate to the COO
+            .add_sub("COO", "VP_BI_2") // Now the VP_BI is subordinate to the COO
+
+            .add_sub("CFO", "VP_BI_8")   // Now the VP_BI is subordinate to the COO
+            .add_sub("CFO", "VP_BI_9") // Now the VP_BI is subordinate to the COO
+            .add_sub("CFO", "VP_BI_10") // Now the VP_BI is subordinate to the COO
+
+            .add_sub("VP_BI", "VP_BI_11") // Now the VP_BI is subordinate to the COO
+            .add_sub("VP_BI", "VP_BI_12") // Now the VP_BI is subordinate to the COO
+
+            .add_sub("VP_BI_1", "VP_BI_13") // Now the VP_BI is subordinate to the COO
+            .add_sub("VP_BI_1", "VP_BI_14") // Now the VP_BI is subordinate to the COO
+
+            .add_sub("VP_SW_1", "VP_BI_15")  // Now the VP_BI is subordinate to the COO
+            .add_sub("VP_SW_1", "VP_BI_16"); // Now the VP_BI is subordinate to the COO
+
+        cout << organization4 << endl;
     }
 }

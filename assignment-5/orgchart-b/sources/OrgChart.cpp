@@ -6,7 +6,6 @@ namespace ariel
 
     OrgChart::OrgChart() : root(nullptr), numberEmployee(0)
     {
-        cout << "Hello constructor" << endl;
     }
     OrgChart OrgChart::add_root(const string &name)
     {
@@ -30,8 +29,7 @@ namespace ariel
         }
         else
         {
-            Node *temp = new Node(child, 0);
-            add_child(root, parent, temp);
+            add_child(root, parent, child);
         }
         numberEmployee++;
         return *this;
@@ -76,12 +74,13 @@ namespace ariel
     {
         return numberEmployee;
     }
-    void OrgChart::add_child(Node *root, string parent, Node *node)
+    void OrgChart::add_child(Node *root, string parent, string child)
     {
 
         if (root->_name == parent)
         {
-            node->level_employee = root->level_employee + 1;
+
+            Node *node = new Node(child, root->level_employee + 1);
             for (Node *n : root->childs)
             {
                 if (n->_name == node->_name)
@@ -97,9 +96,9 @@ namespace ariel
             for (unsigned int i = 0; i < l; i++)
             {
                 if (root->childs[i]->_name == parent)
-                    add_child(root->childs[i], parent, node);
+                    add_child(root->childs[i], parent, child);
                 else
-                    add_child(root->childs[i], parent, node);
+                    add_child(root->childs[i], parent, child);
             }
         }
     }
@@ -118,12 +117,7 @@ namespace ariel
     }
     std::ostream &operator<<(ostream &out, const OrgChart &p1)
     {
-        cout << endl;
-        out << p1.root->_name << endl;
-        out << "|--------|--------|" << endl;
-        out << p1.root->childs[0]->_name << "      " << p1.root->childs[1]->_name << "      " << p1.root->childs[2]->_name << "      " << endl;
-        out << "|                 |" << endl;
-        out << p1.root->childs[0]->childs[0]->_name << "            " << p1.root->childs[2]->childs[0]->_name << endl;
+        p1.root->printTree(out);
         return out;
     }
 }

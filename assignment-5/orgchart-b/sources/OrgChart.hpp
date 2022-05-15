@@ -44,6 +44,53 @@ namespace ariel
                 _name = name;
                 level_employee = level;
             };
+
+        private:
+            void printSubtree(const std::string &prefix, std::ostream &out)
+            {
+                if (childs.empty())
+                    return;
+                out << prefix;
+                size_t n_children = childs.size();
+                out << "\033[1;31m" << (n_children > 1 ? "├── " : "") << "\033[0m";
+
+                for (size_t i = 0; i < n_children; ++i)
+                {
+                    Node *c = childs[i];
+                    if (i < n_children - 1)
+                    {
+                        if (i > 0)
+                        {
+                            out << prefix << "\033[1;31m"
+                                << "├── "
+                                << "\033[0m";
+                        }
+                        bool printStrand = n_children > 1 && !c->childs.empty();
+                        string newPrefix = prefix + (printStrand ? "\033[1;31m│\033[0m\t" : "\t");
+                        out << "\033[1;33m" << c->_name << "\033[0m"
+                            << "\n";
+                        c->printSubtree(newPrefix, out);
+                    }
+                    else
+                    {
+                        out << (n_children > 1 ? prefix : "") << "\033[1;31m"
+                            << "└── "
+                            << "\033[0m";
+                        out << "\033[1;33m" << c->_name << "\033[0m"
+                            << "\n";
+                        c->printSubtree(prefix + "\t", out);
+                    }
+                }
+            }
+
+        public:
+            void printTree(std::ostream &out)
+            {
+                out << "\033[0;32m" << _name << "\033[0m"
+                    << "\n";
+                printSubtree("", out);
+                out << "\033[0m";
+            }
         };
         /**
          * Private preorder_iterator class.
@@ -478,7 +525,7 @@ namespace ariel
          * @param Node  The new Employee of the organization
          * @return None.
          */
-        void add_child(Node *, string, Node *);
+        void add_child(Node *, string, string);
         /**
          * Function responsible for realizing memory allocation allocated during the program
          * @param Node  The root of the organization
