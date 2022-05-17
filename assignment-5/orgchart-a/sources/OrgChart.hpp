@@ -39,7 +39,60 @@ namespace ariel
             {
                 _name = name;
                 level_employee = level;
-            };
+            }
+
+        private:
+            void printSubtree(const std::string &prefix, std::ostream &out)
+            {
+                if (childs.empty())
+                    {return;}
+                out << prefix;
+                size_t n_children = childs.size();
+                out << "\033[1;31m" << (n_children > 1 ? "├── " : "") << "\033[0m";
+
+                for (size_t i = 0; i < n_children; ++i)
+                {
+                    Node *c = childs[i];
+                    if (i < n_children - 1)
+                    {
+                        if (i > 0)
+                        {
+                            out << prefix << "\033[1;31m"
+                                << "├── "
+                                << "\033[0m";
+                        }
+                        bool printStrand = n_children > 1 && !c->childs.empty();
+                        string newPrefix = prefix + (printStrand ? "\033[1;31m│\033[0m\t" : "\t");
+                        out << "\033[1;33m" << c->_name << "\033[0m"
+                            << "\n";
+                        c->printSubtree(newPrefix, out);
+                    }
+                    else
+                    {
+                        out << (n_children > 1 ? prefix : "") << "\033[1;31m"
+                            << "└── "
+                            << "\033[0m";
+                        out << "\033[1;33m" << c->_name << "\033[0m"
+                            << "\n";
+                        c->printSubtree(prefix + "\t", out);
+                    }
+                }
+            }
+
+        public:
+            /**
+             * operator * overloading.
+             *
+             * @param out
+             * @return None
+             */
+            void printTree(std::ostream &out)
+            {
+                out << "\033[0;32m" << _name << "\033[0m"
+                    << "\n";
+                printSubtree("", out);
+                out << "\033[0m";
+            }
         };
 
         /**
@@ -103,71 +156,6 @@ namespace ariel
              * @return bool .
              */
             bool operator!=(const Iterator &rhs) const
-            {
-                return _cur != rhs._cur;
-            }
-        };
-        /**
-         * Private Iterator class.
-         * @return None.
-         */
-        class Iterator_Int
-        {
-        private:
-            Node *_cur;
-
-        public:
-            // ------------------------------ Constructor --------------------------------------
-            /**
-             * Constructor.
-             * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @return None.
-             */
-            Iterator_Int(Node *ptr = nullptr) : _cur(ptr) {}
-            /**
-             * Overloading operator*
-             * @return string name.
-             */
-            int &operator*() const { return _cur->level_employee; }
-            /**
-             * Overloading operator->
-             * @return string name.
-             */
-            int *operator->() const
-            {
-                return 0;
-            }
-            /**
-             * Overloading operator++
-             * @return iterator.
-             */
-            Iterator_Int &operator++()
-            {
-                return *this;
-            }
-
-            /**
-             * Overloading ++operator
-             * @return iterator.
-             */
-            Iterator_Int operator++(int)
-            {
-                Iterator_Int tmp = *this;
-                return tmp;
-            }
-            /**
-             * Overloading operator==
-             * @return bool .
-             */
-            bool operator==(const Iterator_Int &rhs) const
-            {
-                return _cur == rhs._cur;
-            }
-            /**
-             * Overloading operator!=
-             * @return bool .
-             */
-            bool operator!=(const Iterator_Int &rhs) const
             {
                 return _cur != rhs._cur;
             }
@@ -251,7 +239,7 @@ namespace ariel
          * element order.
          * @return Iterator.
          */
-        Iterator_Int begin();
+        Iterator begin();
         /**
          * Constructor.
          * Returns a read/write iterator that points one past the last
@@ -259,14 +247,14 @@ namespace ariel
          * element order.
          * @return Iterator.
          */
-        Iterator_Int end();
+        Iterator end();
         // ---------------------------------- Overloading ----------------------------------
         /**
          * operator * overloading.
          *
          * @param out
-         * @param mat The Vector expressing the matrix
-         * @return new Matrix.
+         * @param OrgChart TheObject
+         * @return out.
          */
         friend std::ostream &operator<<(std::ostream &, const OrgChart &);
         // ------------------------------- Getter && Setter --------------------------------
@@ -290,7 +278,7 @@ namespace ariel
          * @param Node  The new Employee of the organization
          * @return None.
          */
-        void add_child(Node *, string, Node *);
+        void add_child(Node *, string, string);
         /**
          * Function responsible for realizing memory allocation allocated during the program
          * @param Node  The root of the organization

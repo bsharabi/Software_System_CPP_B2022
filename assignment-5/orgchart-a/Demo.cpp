@@ -43,7 +43,7 @@ int main() {
     cout << (*it) << " " ;
   }  // prints: CEO CTO VP_SW CFO COO VP_BI
 
-  for (int element : organization)
+  for (auto element : organization)
   { // this should work like level order
     cout << element << " " ;
   } // prints: CEO CTO CFO COO VP_SW VP_BI
@@ -54,4 +54,3 @@ int main() {
     cout << it->size() << " " ;
   } // prints: 3 3 3 3 5 5
 }
-

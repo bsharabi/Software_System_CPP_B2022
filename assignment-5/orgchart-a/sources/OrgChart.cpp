@@ -4,10 +4,8 @@ using namespace ariel;
 namespace ariel
 {
 
-    OrgChart::OrgChart() : root(nullptr), numberEmployee(0)
-    {
-        cout << "Hello constructor" << endl;
-    }
+    OrgChart::OrgChart() : root(nullptr), numberEmployee(0){}
+    
     OrgChart OrgChart::add_root(const string &name)
     {
         if (root == nullptr)
@@ -30,8 +28,7 @@ namespace ariel
         }
         else
         {
-            Node *temp = new Node(child, 0);
-            add_child(root, parent, temp);
+            add_child(root, parent, child);
         }
         numberEmployee++;
         return *this;
@@ -60,13 +57,13 @@ namespace ariel
     {
         return Iterator{root};
     }
-    OrgChart::Iterator_Int OrgChart::begin()
+    OrgChart::Iterator OrgChart::begin()
     {
-        return Iterator_Int{root};
+        return Iterator{root};
     }
-    OrgChart::Iterator_Int OrgChart::end()
+    OrgChart::Iterator OrgChart::end()
     {
-        return Iterator_Int{root};
+        return Iterator{root};
     }
     OrgChart::Node &OrgChart::getRoot()
     {
@@ -76,12 +73,13 @@ namespace ariel
     {
         return numberEmployee;
     }
-    void OrgChart::add_child(Node *root, string parent, Node *node)
+    void OrgChart::add_child(Node *root, string parent, string child)
     {
 
         if (root->_name == parent)
         {
-            node->level_employee = root->level_employee + 1;
+
+            Node *node = new Node(child, root->level_employee + 1);
             for (Node *n : root->childs)
             {
                 if (n->_name == node->_name)
@@ -97,9 +95,9 @@ namespace ariel
             for (unsigned int i = 0; i < l; i++)
             {
                 if (root->childs[i]->_name == parent)
-                    add_child(root->childs[i], parent, node);
+                    add_child(root->childs[i], parent, child);
                 else
-                    add_child(root->childs[i], parent, node);
+                    add_child(root->childs[i], parent, child);
             }
         }
     }
@@ -118,8 +116,7 @@ namespace ariel
     }
     std::ostream &operator<<(ostream &out, const OrgChart &p1)
     {
-
+        p1.root->printTree(out);
         return out;
     }
 }
-
