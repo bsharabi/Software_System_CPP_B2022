@@ -34,37 +34,37 @@ namespace ariel
         numberEmployee++;
         return *this;
     }
-    OrgChart::levelorder_iterator OrgChart::begin_level_order()
+    OrgChart::Iterator OrgChart::begin_level_order()
     {
-        return levelorder_iterator{root, &orgMap};
+        return Iterator{Mode::levelOrder, root, &orgMap};
     }
-    OrgChart::levelorder_iterator OrgChart::end_level_order()
+    OrgChart::Iterator OrgChart::end_level_order()
     {
-        return levelorder_iterator{nullptr, &orgMap};
+        return Iterator{Mode::levelOrder, nullptr, &orgMap};
     }
-    OrgChart::Reverslevelorder_iterator OrgChart::begin_reverse_order()
+    OrgChart::Iterator OrgChart::begin_reverse_order()
     {
-        return Reverslevelorder_iterator{root, &orgMap};
+        return Iterator{Mode::ReverseLevelOrder, root, &orgMap};
     }
-    OrgChart::Reverslevelorder_iterator OrgChart::reverse_order()
+    OrgChart::Iterator OrgChart::reverse_order()
     {
-        return Reverslevelorder_iterator{nullptr, &orgMap};
+        return Iterator{Mode::ReverseLevelOrder, nullptr, &orgMap};
     }
-    OrgChart::preorder_iterator OrgChart::begin_preorder()
+    OrgChart::Iterator OrgChart::begin_preorder()
     {
-        return preorder_iterator{root, &orgMap};
+        return Iterator{Mode::preOrder, root, &orgMap};
     }
-    OrgChart::preorder_iterator OrgChart::end_preorder()
+    OrgChart::Iterator OrgChart::end_preorder()
     {
-        return preorder_iterator{nullptr, &orgMap};
+        return Iterator{Mode::preOrder, nullptr, &orgMap};
     }
-    OrgChart::levelorder_iterator OrgChart::begin()
+    OrgChart::Iterator OrgChart::begin()
     {
-        return levelorder_iterator{root, &orgMap};
+        return Iterator{Mode::levelOrder, root, &orgMap};
     }
-    OrgChart::levelorder_iterator OrgChart::end()
+    OrgChart::Iterator OrgChart::end()
     {
-        return levelorder_iterator{nullptr, &orgMap};
+        return Iterator{Mode::levelOrder, nullptr, &orgMap};
     }
     OrgChart::Node &OrgChart::getRoot()
     {

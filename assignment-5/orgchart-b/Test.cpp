@@ -115,8 +115,8 @@ TEST_CASE("Initialization")
             .add_sub("COO", "VP_BI_1") // Now the VP_BI is subordinate to the COO
             .add_sub("COO", "VP_BI_2") // Now the VP_BI is subordinate to the COO
 
-            .add_sub("CFO", "VP_BI_8")   // Now the VP_BI is subordinate to the COO
-            .add_sub("CFO", "VP_BI_9") // Now the VP_BI is subordinate to the COO
+            .add_sub("CFO", "VP_BI_8")  // Now the VP_BI is subordinate to the COO
+            .add_sub("CFO", "VP_BI_9")  // Now the VP_BI is subordinate to the COO
             .add_sub("CFO", "VP_BI_10") // Now the VP_BI is subordinate to the COO
 
             .add_sub("VP_BI", "VP_BI_11") // Now the VP_BI is subordinate to the COO
@@ -130,4 +130,29 @@ TEST_CASE("Initialization")
 
         cout << organization4 << endl;
     }
+}
+TEST_CASE("Order tree")
+{
+    
+    OrgChart organization;
+    organization.add_root("CEO").add_sub("CEO", "CTO").add_sub("CEO", "CFO").add_sub("CEO", "COO")
+        .add_sub("CTO", "VP_SW")
+        .add_sub("COO", "VP_BI");
+
+    SUBCASE("pre-Order")
+    {
+
+
+
+
+    }
+
+    SUBCASE("level-Order")
+    {
+    }
+    SUBCASE("reverse-level-Order")
+    {
+    }
+
+    cout << organization << endl;
 }

@@ -13,6 +13,12 @@ using namespace std;
 
 namespace ariel
 {
+    enum class Mode
+    {
+        levelOrder,
+        preOrder,
+        ReverseLevelOrder,
+    };
     /**
      * OrgChart Public class
      *
@@ -49,7 +55,9 @@ namespace ariel
             void printSubtree(const std::string &prefix, std::ostream &out)
             {
                 if (childs.empty())
+                {
                     return;
+                }
                 out << prefix;
                 size_t n_children = childs.size();
                 out << "\033[1;31m" << (n_children > 1 ? "├── " : "") << "\033[0m";
@@ -84,6 +92,12 @@ namespace ariel
             }
 
         public:
+            /**
+             * print tree
+             *
+             * @param out
+             * @return None.
+             */
             void printTree(std::ostream &out)
             {
                 out << "\033[0;32m" << _name << "\033[0m"
@@ -93,10 +107,10 @@ namespace ariel
             }
         };
         /**
-         * Private preorder_iterator class.
+         * Private Iterator class.
          * @return None.
          */
-        class preorder_iterator
+        class Iterator
         {
         private:
             Node *_cur;
@@ -106,27 +120,26 @@ namespace ariel
             // ------------------------------ Constructor --------------------------------------
             /**
              * Constructor.
+             * @param mode
              * @param ptr Pointer to any node of an employee in the organization of type Node
+             * @param orgMap
              * @return None.
              */
-            preorder_iterator(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            Iterator(Mode mode, Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
             {
                 if (ptr != nullptr)
                 {
-
-                    orgMap->clear();
-                    stack<Node *> Stack;
-                    Stack.push(ptr);
-                    while (!Stack.empty())
+                    switch (mode)
                     {
-                        _cur = Stack.top();
-                        Stack.pop();
-                        nodeList.push_back(_cur);
-                        (*orgMap)[_cur->level_employee].push_back(_cur);
-                        for (unsigned int i = _cur->childs.size(); i > 0; i--)
-                        {
-                            Stack.push(_cur->childs[i - 1]);
-                        }
+                    case Mode::levelOrder:
+                        levelOrder(ptr, orgMap);
+                        break;
+                    case Mode::preOrder:
+                        preOrder(ptr, orgMap);
+                        break;
+                    case Mode::ReverseLevelOrder:
+                        ReverseLevelOrder(ptr, orgMap);
+                        break;
                     }
                     _cur = nodeList.front();
                     nodeList.pop_front();
@@ -147,13 +160,13 @@ namespace ariel
              */
             string *operator->() const
             {
-                return &(_cur->_name);
+                return &_cur->_name;
             }
             /**
              * Overloading operator++
              * @return iterator.
              */
-            preorder_iterator &operator++()
+            Iterator &operator++()
             {
                 if (!nodeList.empty())
                 {
@@ -171,16 +184,16 @@ namespace ariel
              * Overloading ++operator
              * @return iterator.
              */
-            preorder_iterator operator++(int)
+            Iterator operator++(int)
             {
-                preorder_iterator tmp = *this;
+                Iterator tmp = *this;
                 return tmp;
             }
             /**
              * Overloading operator==
              * @return bool .
              */
-            bool operator==(const preorder_iterator &rhs) const
+            bool operator==(const Iterator &rhs) const
             {
                 return _cur == rhs._cur;
             }
@@ -188,221 +201,90 @@ namespace ariel
              * Overloading operator!=
              * @return bool .
              */
-            bool operator!=(const preorder_iterator &rhs) const
+            bool operator!=(const Iterator &rhs) const
             {
                 return _cur != rhs._cur;
             }
-        };
-        /**
-         * Private levelorder_iterator class.
-         * @return None.
-         */
-        class levelorder_iterator
-        {
-        private:
-            Node *_cur;
-            std::queue<Node *> nodeQueue;
 
-        public:
-            // ------------------------------ Constructor --------------------------------------
             /**
-             * Constructor.
+             * Level Order Traversal is the algorithm to process all nodes of a tree by traversing through depth, first the root, then the child of the root, etc. How do you do level order traversal? Level order traversal can be done by using a queue and traversing nodes by depth
+             * @param mode Pointer to any node of an employee in the organization of type Node
              * @param ptr Pointer to any node of an employee in the organization of type Node
+             * @param orgMap Pointer to any node of an employee in the organization of type Node
              * @return None.
              */
-            levelorder_iterator(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            void levelOrder(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
             {
-
-                if (ptr != nullptr)
+                orgMap->clear();
+                queue<Node *> q;
+                q.push(ptr);
+                while (!q.empty())
                 {
-                    orgMap->clear();
-                    queue<Node *> q;
-                    q.push(ptr);
-                    while (!q.empty())
+                    _cur = q.front();
+                    q.pop();
+                    nodeList.push_back(_cur);
+                    (*orgMap)[_cur->level_employee].push_back(_cur);
+                    for (Node *p : _cur->childs)
                     {
-                        _cur = q.front();
-                        q.pop();
-                        nodeQueue.push(_cur);
-                        (*orgMap)[_cur->level_employee].push_back(_cur);
-                        for (Node *p : _cur->childs)
-                        {
-                            q.push(p);
-                        }
+                        q.push(p);
                     }
-                    _cur = nodeQueue.front();
-                    nodeQueue.pop();
-                }
-                else
-                {
-                    _cur = nullptr;
                 }
             }
             /**
-             * Overloading operator*
-             * @return string name.
-             */
-            string &operator*() const { return _cur->_name; }
-            /**
-             * Overloading operator->
-             * @return string name.
-             */
-            string *operator->() const
-            {
-                return &_cur->_name;
-                ;
-            }
-            /**
-             * Overloading operator++
-             * @return iterator.
-             */
-            levelorder_iterator &operator++()
-            {
-
-                if (!nodeQueue.empty())
-                {
-                    _cur = nodeQueue.front();
-                    nodeQueue.pop();
-                }
-                else
-                {
-                    _cur = nullptr;
-                }
-                return *this;
-            }
-
-            /**
-             * Overloading ++operator
-             * @return iterator.
-             */
-            levelorder_iterator operator++(int)
-            {
-                levelorder_iterator tmp = *this;
-                ++(*this);
-                return tmp;
-            }
-            /**
-             * Overloading operator==
-             * @return bool .
-             */
-            bool operator==(const levelorder_iterator &rhs) const
-            {
-                return _cur == rhs._cur;
-            }
-            /**
-             * Overloading operator!=
-             * @return bool .
-             */
-            bool operator!=(const levelorder_iterator &rhs) const
-            {
-                return _cur != rhs._cur;
-            }
-        };
-        /**
-         * Private Reverslevelorder_iterator class.
-         * @return None.
-         */
-        class Reverslevelorder_iterator
-        {
-        private:
-            Node *_cur;
-            std::queue<Node *> nodeQueue;
-
-        public:
-            // ------------------------------ Constructor --------------------------------------
-            /**
-             * Constructor.
+             * A pre-order is an order placed for an item that has not yet been released. The idea for pre-orders came because people found it hard to get popular items in stores because of their popularity. Companies then had the idea to allow customers to reserve their own personal copy before its release, which has been a huge success
+             * @param mode Pointer to any node of an employee in the organization of type Node
              * @param ptr Pointer to any node of an employee in the organization of type Node
+             * @param orgMap Pointer to any node of an employee in the organization of type Node
              * @return None.
              */
-            Reverslevelorder_iterator(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            void preOrder(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
             {
-                if (ptr != nullptr)
+                orgMap->clear();
+                stack<Node *> Stack;
+                Stack.push(ptr);
+                while (!Stack.empty())
                 {
-                    orgMap->clear();
-                    queue<Node *> q;
-                    q.push(ptr);
-                    while (!q.empty())
+                    _cur = Stack.top();
+                    Stack.pop();
+                    nodeList.push_back(_cur);
+                    (*orgMap)[_cur->level_employee].push_back(_cur);
+
+                    for (unsigned int i = _cur->childs.size(); i > 0; i--)
                     {
-                        _cur = q.front();
-                        q.pop();
-                        (*orgMap)[_cur->level_employee].push_back(_cur);
-                        for (Node *p : _cur->childs)
-                        {
-                            q.push(p);
-                        }
+                        Stack.push(_cur->childs[i - 1]);
                     }
-
-                    for (int index = orgMap->size() - 1; index >= 0; index--)
+                }
+            }
+            /**
+             * A Reverse-Level-Order is an order placed for an item that has not yet been released.
+             * @param mode Pointer to any node of an employee in the organization of type Node
+             * @param ptr Pointer to any node of an employee in the organization of type Node
+             * @param orgMap Pointer to any node of an employee in the organization of type Node
+             * @return None.
+             */
+            void ReverseLevelOrder(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            {
+                orgMap->clear();
+                queue<Node *> q;
+                q.push(ptr);
+                while (!q.empty())
+                {
+                    _cur = q.front();
+                    q.pop();
+                    (*orgMap)[_cur->level_employee].push_back(_cur);
+                    for (auto *p : _cur->childs)
                     {
-                        for (auto node : (*orgMap)[index])
-                        {
-                            nodeQueue.push(node);
-                        }
+                        q.push(p);
                     }
+                }
 
-                    _cur = nodeQueue.front();
-                    nodeQueue.pop();
-                }
-                else
+                for (size_t index = orgMap->size(); index > 0; index--)
                 {
-                    _cur = nullptr;
+                    for (auto *node : (*orgMap)[index-1])
+                    {
+                        nodeList.push_back(node);
+                    }
                 }
-            }
-            /**
-             * Overloading operator*
-             * @return string name.
-             */
-            string &operator*() const { return _cur->_name; }
-            /**
-             * Overloading operator->
-             * @return string name.
-             */
-            string *operator->() const
-            {
-                return &_cur->_name;
-            }
-            /**
-             * Overloading operator++
-             * @return iterator.
-             */
-            Reverslevelorder_iterator &operator++()
-            {
-                if (!nodeQueue.empty())
-                {
-                    _cur = nodeQueue.front();
-                    nodeQueue.pop();
-                }
-                else
-                {
-                    _cur = nullptr;
-                }
-                return *this;
-            }
-
-            /**
-             * Overloading ++operator
-             * @return iterator.
-             */
-            Reverslevelorder_iterator operator++(int)
-            {
-                Reverslevelorder_iterator tmp = *this;
-                return tmp;
-            }
-            /**
-             * Overloading operator==
-             * @return bool .
-             */
-            bool operator==(const Reverslevelorder_iterator &rhs) const
-            {
-                return _cur == rhs._cur;
-            }
-            /**
-             * Overloading operator!=
-             * @return bool .
-             */
-            bool operator!=(const Reverslevelorder_iterator &rhs) const
-            {
-                return _cur != rhs._cur;
             }
         };
 
@@ -444,49 +326,49 @@ namespace ariel
          * element level order..
          * @return Iterator.
          */
-        levelorder_iterator begin_level_order();
+        Iterator begin_level_order();
         /**
          * Returns a read/write iterator that points one past the last
          * element in the %vector. Iteration is done in ordinary
          * element level order..
          * @return Iterator.
          */
-        levelorder_iterator end_level_order();
+        Iterator end_level_order();
         /**
          * Returns a read/write iterator that points to the first
          * element in the %vector. Iteration is done in ordinary
          * element revers order..
          * @return Iterator.
          */
-        Reverslevelorder_iterator begin_reverse_order();
+        Iterator begin_reverse_order();
         /**
          * Returns a read/write iterator that points one past the last
          * element in the %vector. Iteration is done in ordinary
          * element revers order..
          * @return Iterator.
          */
-        Reverslevelorder_iterator reverse_order();
+        Iterator reverse_order();
         /**
          * Returns a read/write iterator that points to the first
          * element in the %vector. Iteration is done in ordinary
          * element preorder..
          * @return Iterator.
          */
-        preorder_iterator begin_preorder();
+        Iterator begin_preorder();
         /**
          * Returns a read/write iterator that points one past the last
          * element in the %vector. Iteration is done in ordinary
          * element preorder..
          * @return Iterator.
          */
-        preorder_iterator end_preorder();
+        Iterator end_preorder();
         /**
          * Returns a read/write iterator that points to the first
          * element in the %vector. Iteration is done in ordinary
          * element order.
          * @return Iterator.
          */
-        levelorder_iterator begin();
+        Iterator begin();
         /**
          * Constructor.
          * Returns a read/write iterator that points one past the last
@@ -494,14 +376,14 @@ namespace ariel
          * element order.
          * @return Iterator.
          */
-        levelorder_iterator end();
+        Iterator end();
         // ---------------------------------- Overloading ----------------------------------
         /**
          * operator * overloading.
          *
          * @param out
-         * @param mat The Vector expressing the matrix
-         * @return new Matrix.
+         * @param OrgChart The Object
+         * @return out.
          */
         friend std::ostream &operator<<(std::ostream &, const OrgChart &);
         // ------------------------------- Getter && Setter --------------------------------
