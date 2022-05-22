@@ -115,6 +115,7 @@ namespace ariel
         private:
             Node *_cur;
             std::list<Node *> nodeList;
+            
 
         public:
             // ------------------------------ Constructor --------------------------------------
@@ -122,23 +123,22 @@ namespace ariel
              * Constructor.
              * @param mode
              * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @param orgMap
              * @return None.
              */
-            Iterator(Mode mode, Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            Iterator(Mode mode, Node *ptr = nullptr)
             {
                 if (ptr != nullptr)
                 {
                     switch (mode)
                     {
                     case Mode::levelOrder:
-                        levelOrder(ptr, orgMap);
+                        levelOrder(ptr);
                         break;
                     case Mode::preOrder:
-                        preOrder(ptr, orgMap);
+                        preOrder(ptr);
                         break;
                     case Mode::ReverseLevelOrder:
-                        ReverseLevelOrder(ptr, orgMap);
+                        ReverseLevelOrder(ptr);
                         break;
                     }
                     _cur = nodeList.front();
@@ -210,12 +210,10 @@ namespace ariel
              * Level Order Traversal is the algorithm to process all nodes of a tree by traversing through depth, first the root, then the child of the root, etc. How do you do level order traversal? Level order traversal can be done by using a queue and traversing nodes by depth
              * @param mode Pointer to any node of an employee in the organization of type Node
              * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @param orgMap Pointer to any node of an employee in the organization of type Node
              * @return None.
              */
-            void levelOrder(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            void levelOrder(Node *ptr = nullptr)
             {
-                orgMap->clear();
                 queue<Node *> q;
                 q.push(ptr);
                 while (!q.empty())
@@ -223,7 +221,6 @@ namespace ariel
                     _cur = q.front();
                     q.pop();
                     nodeList.push_back(_cur);
-                    (*orgMap)[_cur->level_employee].push_back(_cur);
                     for (Node *p : _cur->childs)
                     {
                         q.push(p);
@@ -234,12 +231,10 @@ namespace ariel
              * A pre-order is an order placed for an item that has not yet been released. The idea for pre-orders came because people found it hard to get popular items in stores because of their popularity. Companies then had the idea to allow customers to reserve their own personal copy before its release, which has been a huge success
              * @param mode Pointer to any node of an employee in the organization of type Node
              * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @param orgMap Pointer to any node of an employee in the organization of type Node
              * @return None.
              */
-            void preOrder(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            void preOrder(Node *ptr = nullptr)
             {
-                orgMap->clear();
                 stack<Node *> Stack;
                 Stack.push(ptr);
                 while (!Stack.empty())
@@ -247,7 +242,6 @@ namespace ariel
                     _cur = Stack.top();
                     Stack.pop();
                     nodeList.push_back(_cur);
-                    (*orgMap)[_cur->level_employee].push_back(_cur);
 
                     for (unsigned int i = _cur->childs.size(); i > 0; i--)
                     {
@@ -259,28 +253,27 @@ namespace ariel
              * A Reverse-Level-Order is an order placed for an item that has not yet been released.
              * @param mode Pointer to any node of an employee in the organization of type Node
              * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @param orgMap Pointer to any node of an employee in the organization of type Node
              * @return None.
              */
-            void ReverseLevelOrder(Node *ptr = nullptr, map<int, vector<Node *>> *orgMap = nullptr)
+            void ReverseLevelOrder(Node *ptr = nullptr)
             {
-                orgMap->clear();
+                map<int, vector<Node *>> orgMap;
                 queue<Node *> q;
                 q.push(ptr);
                 while (!q.empty())
                 {
                     _cur = q.front();
                     q.pop();
-                    (*orgMap)[_cur->level_employee].push_back(_cur);
+                    orgMap[_cur->level_employee].push_back(_cur);
                     for (auto *p : _cur->childs)
                     {
                         q.push(p);
                     }
                 }
 
-                for (size_t index = orgMap->size(); index > 0; index--)
+                for (size_t index = orgMap.size(); index > 0; index--)
                 {
-                    for (auto *node : (*orgMap)[index-1])
+                    for (auto *node : orgMap[index-1])
                     {
                         nodeList.push_back(node);
                     }
@@ -290,7 +283,6 @@ namespace ariel
 
         Node *root;
         int numberEmployee;
-        map<int, vector<Node *>> orgMap;
 
     public:
         // ----------------------------------- Constuctors --------------------------------
@@ -397,7 +389,7 @@ namespace ariel
          * getNumberEmployee
          * @return Number Employee.
          */
-        int getNumberEmployee();
+        int getNumberEmployee() const;
         // --------------------------------- Help functions --------------------------------
     private:
         /**
@@ -407,7 +399,7 @@ namespace ariel
          * @param Node  The new Employee of the organization
          * @return None.
          */
-        void add_child(Node *, string, string);
+        void add_child(Node *, const string &, const string &);
         /**
          * Function responsible for realizing memory allocation allocated during the program
          * @param Node  The root of the organization
