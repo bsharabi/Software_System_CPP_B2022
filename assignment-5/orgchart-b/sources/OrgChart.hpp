@@ -4,21 +4,15 @@
 #include <unistd.h>
 #include <map>
 #include <list>
-
+#include <regex>
 #include <stack>
 #include <queue>
-
 #include <algorithm>
 using namespace std;
 
 namespace ariel
 {
-    enum class Mode
-    {
-        levelOrder,
-        preOrder,
-        ReverseLevelOrder,
-    };
+
     /**
      * OrgChart Public class
      *
@@ -114,8 +108,7 @@ namespace ariel
         {
         private:
             Node *_cur;
-            std::list<Node *> nodeList;
-            
+            list<Node *> *order;
 
         public:
             // ------------------------------ Constructor --------------------------------------
@@ -125,30 +118,20 @@ namespace ariel
              * @param ptr Pointer to any node of an employee in the organization of type Node
              * @return None.
              */
-            Iterator(Mode mode, Node *ptr = nullptr)
+            Iterator(list<Node *> *listOrder)
             {
-                if (ptr != nullptr)
-                {
-                    switch (mode)
-                    {
-                    case Mode::levelOrder:
-                        levelOrder(ptr);
-                        break;
-                    case Mode::preOrder:
-                        preOrder(ptr);
-                        break;
-                    case Mode::ReverseLevelOrder:
-                        ReverseLevelOrder(ptr);
-                        break;
-                    }
-                    _cur = nodeList.front();
-                    nodeList.pop_front();
-                }
-                else
+                if (listOrder == nullptr || (*listOrder).empty())
                 {
                     _cur = nullptr;
                 }
+                else
+                {
+                    order = listOrder;
+                    _cur = (*order).front();
+                    (*order).pop_front();
+                }
             }
+            // ------------------------------ Destructor  --------------------------------------
             /**
              * Overloading operator*
              * @return string name.
@@ -168,10 +151,11 @@ namespace ariel
              */
             Iterator &operator++()
             {
-                if (!nodeList.empty())
+
+                if (!(*order).empty())
                 {
-                    _cur = nodeList.front();
-                    nodeList.pop_front();
+                    _cur = (*order).front();
+                    (*order).pop_front();
                 }
                 else
                 {
@@ -179,14 +163,13 @@ namespace ariel
                 }
                 return *this;
             }
-
             /**
              * Overloading ++operator
              * @return iterator.
              */
             Iterator operator++(int)
             {
-                Iterator tmp = *this;
+                Iterator tmp = ++(*this);
                 return tmp;
             }
             /**
@@ -205,84 +188,12 @@ namespace ariel
             {
                 return _cur != rhs._cur;
             }
-
-            /**
-             * Level Order Traversal is the algorithm to process all nodes of a tree by traversing through depth, first the root, then the child of the root, etc. How do you do level order traversal? Level order traversal can be done by using a queue and traversing nodes by depth
-             * @param mode Pointer to any node of an employee in the organization of type Node
-             * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @return None.
-             */
-            void levelOrder(Node *ptr = nullptr)
-            {
-                queue<Node *> q;
-                q.push(ptr);
-                while (!q.empty())
-                {
-                    _cur = q.front();
-                    q.pop();
-                    nodeList.push_back(_cur);
-                    for (Node *p : _cur->childs)
-                    {
-                        q.push(p);
-                    }
-                }
-            }
-            /**
-             * A pre-order is an order placed for an item that has not yet been released. The idea for pre-orders came because people found it hard to get popular items in stores because of their popularity. Companies then had the idea to allow customers to reserve their own personal copy before its release, which has been a huge success
-             * @param mode Pointer to any node of an employee in the organization of type Node
-             * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @return None.
-             */
-            void preOrder(Node *ptr = nullptr)
-            {
-                stack<Node *> Stack;
-                Stack.push(ptr);
-                while (!Stack.empty())
-                {
-                    _cur = Stack.top();
-                    Stack.pop();
-                    nodeList.push_back(_cur);
-
-                    for (unsigned int i = _cur->childs.size(); i > 0; i--)
-                    {
-                        Stack.push(_cur->childs[i - 1]);
-                    }
-                }
-            }
-            /**
-             * A Reverse-Level-Order is an order placed for an item that has not yet been released.
-             * @param mode Pointer to any node of an employee in the organization of type Node
-             * @param ptr Pointer to any node of an employee in the organization of type Node
-             * @return None.
-             */
-            void ReverseLevelOrder(Node *ptr = nullptr)
-            {
-                map<int, vector<Node *>> orgMap;
-                queue<Node *> q;
-                q.push(ptr);
-                while (!q.empty())
-                {
-                    _cur = q.front();
-                    q.pop();
-                    orgMap[_cur->level_employee].push_back(_cur);
-                    for (auto *p : _cur->childs)
-                    {
-                        q.push(p);
-                    }
-                }
-
-                for (size_t index = orgMap.size(); index > 0; index--)
-                {
-                    for (auto *node : orgMap[index-1])
-                    {
-                        nodeList.push_back(node);
-                    }
-                }
-            }
         };
-
+        // ---------------------------- class OrgChart variables --------------------------
         Node *root;
         int numberEmployee;
+        list<Node *> order;
+        Node *_cur;
 
     public:
         // ----------------------------------- Constuctors --------------------------------
@@ -291,27 +202,40 @@ namespace ariel
          * @return None.
          */
         OrgChart();
+        // ----------------------------------- Destructor --------------------------------
         /**
-         * Constructor.
-         * This constructor is called when the created class object is no longer in use and allows the realization of a memory release allocated during the program
+         * A  destructor is a member function that is invoked automatically when the object goes out of scope or is explicitly destroyed by a call to delete
+         * Destructor.
          * @return None.
          */
-        // ~OrgChart() {}
-
+        ~OrgChart();
+        // ----------------------------------- Copy Constructor --------------------------------
+        /**
+         * Copy Constructor
+         * A copy constructor is called when an object is passed by value..
+         * @return None.
+         */
+        OrgChart(OrgChart &) = default;
+        /**
+         * Copy Constructor
+         * A copy constructor is called when an object is passed by value..
+         * @return None.
+         */
+        OrgChart(OrgChart &&) = default;
         // ----------------------------------- functions ----------------------------------
         /**
          * A function that allows adding owners to the organization,
          * @param Owners_name Name of the owner of the organization
          * @return OrgChart.
          */
-        OrgChart add_root(string const &);
+        OrgChart &add_root(string const &);
         /**
          * A function that allows adding employees to the organization,
          * @param Manager_name The name of the actor
          * @param Employee_name Type of player
          * @return OrgChart.
          */
-        OrgChart add_sub(const string &, const string &);
+        OrgChart &add_sub(const string &, const string &);
         /**
          * Returns a read/write iterator that points to the first
          * element in the %vector. Iteration is done in ordinary
@@ -378,6 +302,8 @@ namespace ariel
          * @return out.
          */
         friend std::ostream &operator<<(std::ostream &, const OrgChart &);
+        OrgChart &operator=(OrgChart const &) = default;
+        OrgChart &operator=(OrgChart &&orgchart) = default;
         // ------------------------------- Getter && Setter --------------------------------
         /**
          * root getter
@@ -405,6 +331,29 @@ namespace ariel
          * @param Node  The root of the organization
          * @return None.
          */
-        void freeOrgChart(Node *);
+        void freeOrgChart();
+        /**
+         * Level Order Traversal is the algorithm to process all nodes of a tree by traversing through depth, first the root, then the child of the root, etc. How do you do level order traversal? Level order traversal can be done by using a queue and traversing nodes by depth
+         * @return None.
+         */
+        void levelOrder();
+        /**
+         * A pre-order is an order placed for an item that has not yet been released. The idea for pre-orders came because people found it hard to get popular items in stores because of their popularity. Companies then had the idea to allow customers to reserve their own personal copy before its release, which has been a huge success
+         * @return None.
+         */
+        void preOrder();
+        /**
+         * A Reverse-Level-Order is an order placed for an item that has not yet been released.
+         * @return None.
+         */
+        void ReverseLevelOrder();
+        /**
+         * A valid name is the correct zoological name of a taxon. In contrast, a name which violates the rules of the ICZN is known as an invalid name. An invalid name is not considered to be the correct scientific name for a taxon. There are numerous different kinds of invalid names.
+         * @return True if the name is otherwise false.
+         */
+        static bool validName(string const &name)
+        {
+            return !(regex_match(name, regex("^(?=.{1,40}$)[a-zA-Z1-9]+(?:[_'\\s][a-zA-Z]+)*$")));
+        }
     };
 }

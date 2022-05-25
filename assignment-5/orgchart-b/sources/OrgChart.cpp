@@ -4,11 +4,14 @@ using namespace ariel;
 namespace ariel
 {
 
-    OrgChart::OrgChart() : root(nullptr), numberEmployee(0) {}
-
-    OrgChart OrgChart::add_root(const string &name)
+    OrgChart::OrgChart() : root(nullptr), numberEmployee(0), _cur(nullptr) {}
+    OrgChart::~OrgChart()
     {
-        if (name.empty())
+        freeOrgChart();
+    }
+    OrgChart &OrgChart::add_root(const string &name)
+    {
+        if (validName(name))
         {
             throw invalid_argument("empty string");
         }
@@ -24,7 +27,7 @@ namespace ariel
 
         return *this;
     }
-    OrgChart OrgChart::add_sub(const string &parent, const string &child)
+    OrgChart &OrgChart::add_sub(const string &parent, const string &child)
     {
         if (parent.empty() || child.empty())
         {
@@ -51,7 +54,10 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::levelOrder, root};
+        _cur = root;
+        order.clear();
+        levelOrder();
+        return Iterator{&order};
     }
     OrgChart::Iterator OrgChart::end_level_order()
     {
@@ -59,7 +65,7 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::levelOrder, nullptr};
+        return Iterator{nullptr};
     }
     OrgChart::Iterator OrgChart::begin_reverse_order()
     {
@@ -67,7 +73,10 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::ReverseLevelOrder, root};
+        _cur = root;
+        order.clear();
+        ReverseLevelOrder();
+        return Iterator{&order};
     }
     OrgChart::Iterator OrgChart::reverse_order()
     {
@@ -75,7 +84,7 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::ReverseLevelOrder, nullptr};
+        return Iterator{nullptr};
     }
     OrgChart::Iterator OrgChart::begin_preorder()
     {
@@ -83,7 +92,10 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::preOrder, root};
+        _cur = root;
+        order.clear();
+        preOrder();
+        return Iterator{&order};
     }
     OrgChart::Iterator OrgChart::end_preorder()
     {
@@ -91,7 +103,7 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::preOrder, nullptr};
+        return Iterator{nullptr};
     }
     OrgChart::Iterator OrgChart::begin()
     {
@@ -99,7 +111,10 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::levelOrder, root};
+        _cur = root;
+        order.clear();
+        levelOrder();
+        return Iterator{&order};
     }
     OrgChart::Iterator OrgChart::end()
     {
@@ -107,7 +122,7 @@ namespace ariel
         {
             throw invalid_argument("chart is empty!");
         }
-        return Iterator{Mode::levelOrder, nullptr};
+        return Iterator{nullptr};
     }
     OrgChart::Node &OrgChart::getRoot()
     {
@@ -126,36 +141,99 @@ namespace ariel
             Node *node = new Node(child, root->level_employee + 1);
             root->childs.push_back(node);
             numberEmployee++;
-        }
-        else
-        {
-            int l = root->childs.size();
-            for (unsigned int i = 0; i < l; i++)
-            {
-                add_child(root->childs[i], parent, child);
-            }
-        }
-    }
-    void OrgChart::freeOrgChart(Node *root)
-    {
-        if (root == nullptr)
-        {
             return;
         }
-        if (!root->childs.empty())
+
+        int l = root->childs.size();
+        for (unsigned int i = 0; i < l; i++)
         {
-            unsigned int childsNumber = root->childs.size();
-            for (unsigned int child = 0; child < childsNumber; child++)
+            add_child(root->childs[i], parent, child);
+        }
+    }
+    void OrgChart::freeOrgChart()
+    {
+
+        if (root != nullptr)
+        {
+            queue<Node *> q;
+            q.push(root);
+            while (!q.empty())
             {
-                freeOrgChart(root->childs[child]);
+                _cur = q.front();
+                q.pop();
+                order.push_back(_cur);
+                for (Node *p : _cur->childs)
+                {
+                    q.push(p);
+                }
+            }
+            for (Node *node : order)
+            {
+                // cout << "\ndelete " << node->_name << endl;
+                delete node;
             }
         }
-        cout << "delete " << root->_name << endl;
-        delete root;
     }
     std::ostream &operator<<(ostream &out, const OrgChart &p1)
     {
         p1.root->printTree(out);
         return out;
     }
+    void OrgChart::levelOrder()
+    {
+
+        queue<Node *> q;
+        q.push(_cur);
+        while (!q.empty())
+        {
+            _cur = q.front();
+            q.pop();
+            order.push_back(_cur);
+            for (Node *p : _cur->childs)
+            {
+                q.push(p);
+            }
+        }
+    }
+    void OrgChart::preOrder()
+    {
+        stack<Node *> Stack;
+        Stack.push(_cur);
+        while (!Stack.empty())
+        {
+            _cur = Stack.top();
+            Stack.pop();
+            order.push_back(_cur);
+
+            for (unsigned int i = _cur->childs.size(); i > 0; i--)
+            {
+                Stack.push(_cur->childs[i - 1]);
+            }
+        }
+    }
+    void OrgChart::ReverseLevelOrder()
+    {
+        map<int, vector<Node *>> orgMap;
+        queue<Node *> q;
+        q.push(_cur);
+        while (!q.empty())
+        {
+            _cur = q.front();
+            q.pop();
+            orgMap[_cur->level_employee].push_back(_cur);
+            for (auto *p : _cur->childs)
+            {
+                q.push(p);
+            }
+        }
+
+        for (size_t index = orgMap.size(); index > 0; index--)
+        {
+            for (auto *node : orgMap[index - 1])
+            {
+                order.push_back(node);
+            }
+        }
+    }
+    
 }
