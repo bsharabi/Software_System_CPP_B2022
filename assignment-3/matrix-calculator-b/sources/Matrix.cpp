@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 using namespace std;
-
+#include <regex>
 namespace zich
 {
 
@@ -230,50 +230,16 @@ namespace zich
         return Matrix(temp, mat._row, mat._col);
     }
 
-    int count_row(string str, char to_count)
-    {
-        int count = 0;
-
-        for (size_t i = 0; i < str.size(); i++)
-        {
-            if (str[i] == to_count)
-            {
-                ++count;
-            }
-        }
-
-        return count;
-    }
-    void valid_input(string str)
-    {
-        bool flag = false;
-        for (size_t i = 0; i < str.length(); ++i)
-        {
-            if ((str[i] == ']' && !flag) || (str[i] == '[' && flag))
-            {
-                throw invalid_argument("invalid input ");
-            }
-            if (str[i] == ']' && flag)
-            {
-                flag = false;
-            }
-            if (str[i] == '[')
-            {
-                flag = true;
-            }
-            if ((str[i] == ',' && str[i - 1] != ']') ||
-                (str[i] == ',' && str[i + 1] != ' '))
-            {
-                throw invalid_argument("invalid input ");
-            }
-        }
-    }
     istream &operator>>(std::istream &in, Matrix &mat)
     {
         string str;
         getline(in, str);
-        valid_input(str);
-        int row = count_row(str, ',') + 1;
+        if (!regex_match(str, regex("^\\[\\d+(?: \\d+)*](?:, \\[\\d+(?: \\d+)*])*$")))
+        {
+            throw invalid_argument("err");
+        }
+        int row = (int)count(str.begin(), str.end(), ',') + 1;
+
         std::vector<double> mat_v;
         for (size_t i = 0, j = 0; i < str.length(); j = ++i)
         {

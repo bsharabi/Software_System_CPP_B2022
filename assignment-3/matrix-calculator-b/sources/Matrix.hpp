@@ -12,6 +12,7 @@ namespace zich
         vector<double> _mat;
 
     public:
+        Matrix(){};
         /**
          * Constructor.
          *
@@ -208,7 +209,7 @@ namespace zich
         {
             if (col < 1 || row < 1 || mat.size() != row * col)
             {
-                throw invalid_argument("matrix size must be grater then 0");
+                throw invalid_argument("matrix size must be grater then 0 or not symmetric");
             }
             return true;
         }
